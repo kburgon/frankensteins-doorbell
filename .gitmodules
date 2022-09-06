@@ -1,0 +1,3 @@
+[submodule "sound-playback-helper"]
+	path = sound-playback-helper
+	url = git@github.com:kburgon/sound-playback-helper.git
