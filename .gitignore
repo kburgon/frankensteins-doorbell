@@ -129,4 +129,7 @@ dmypy.json
 .pyre/
 
 # Project-specific files and directories
+v_env/
+.vscode/
+sounds/*
 sound-playback-helper/
