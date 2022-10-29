@@ -1,10 +1,13 @@
 import os
-from datetime import datetime
+import time
 from sound_playback_helper.sound_player import SoundPlayer
 import paho.mqtt.client as mqtt
 
 mqtt_broker_address = os.environ['MQTT_BROKER_ADDR']
-trigger_topic = os.environ['FRANKENSTEINS_DOORBELL_TRIGGER_TOPIC']
+trigger_topic = os.environ['F_DB_TRIGGER_TOPIC']
+main_sound_name = os.environ['F_DB_MAIN_SOUND_NAME']
+heartbeat_sound_name = os.environ['F_DB_HEARTBEAT_SOUND_NAME']
+old_time = time.time()
 sound_file_dir = 'sounds/'
 player = SoundPlayer(sound_file_dir)
 
@@ -13,7 +16,8 @@ def on_message_received(client, userdata, message):
     print('Received message ' + message_text + ' from topic ' + str(message.topic) + '.')
     if message_text == 'on':
         print('Motion detected, playing sound...')
-        player.play(player.list_sounds()[0])
+        player.play(main_sound_name)
+        old_time = time.time()
     else:
         print('No motion detected')
 
@@ -26,4 +30,9 @@ def setup_client():
 
 if (__name__ == "__main__"):
     client = setup_client()
-    client.loop_forever()
+    while True:
+        curTime = time.time();
+        if curTime - old_time > 60:
+            player.play(heartbeat_sound_name)
+            old_time = curTime
+        client.loop(30);
